@@ -1,0 +1,12 @@
+.env
+*.env
+!.env.example
+target/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+.idea/
+.vscode/
+*.iml
+.DS_Store

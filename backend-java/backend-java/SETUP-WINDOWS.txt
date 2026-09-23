@@ -1,0 +1,25 @@
+FAST REPLACEMENT STEPS
+
+1. Stop the old Java backend.
+2. Delete/rename your old backend-java folder.
+3. Extract this backend-java folder into your ai-mock-interviewer project.
+4. Open the backend-java folder in VS Code.
+5. Set these PowerShell variables (use your own values):
+
+   $env:DB_PASSWORD="YOUR_MYSQL_PASSWORD"
+   $env:GROQ_API_KEY="YOUR_GROQ_API_KEY"
+   $env:JWT_SECRET_KEY="replace-with-a-long-secret-at-least-32-characters"
+
+6. Start:
+
+   mvn spring-boot:run
+
+   OR, if your project has the Maven wrapper:
+
+   .\mvnw.cmd spring-boot:run
+
+7. Test:
+   http://localhost:8080/api/test
+
+The Groq key is used only by the Java backend. Never put it in React or GitHub.
+If GROQ_API_KEY is missing, the backend automatically uses its local fallback AI.

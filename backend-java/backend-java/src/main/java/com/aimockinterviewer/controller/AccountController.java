@@ -1,0 +1,6 @@
+package com.aimockinterviewer.controller;
+import com.aimockinterviewer.dto.ProfileDtos.DeleteAccountRequest; import com.aimockinterviewer.entity.Interview; import com.aimockinterviewer.entity.User; import com.aimockinterviewer.repository.InterviewRepository; import com.aimockinterviewer.repository.UserRepository; import org.springframework.security.core.Authentication; import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; import org.springframework.web.bind.annotation.*; import java.util.List;
+@RestController @RequestMapping("/api/account") public class AccountController {
+ private final UserRepository users; private final InterviewRepository interviews; private final BCryptPasswordEncoder encoder; public AccountController(UserRepository users,InterviewRepository interviews,BCryptPasswordEncoder encoder){this.users=users;this.interviews=interviews;this.encoder=encoder;}
+ @DeleteMapping public String delete(@RequestBody DeleteAccountRequest r,Authentication a){User u=users.findByEmail(a.getName()).orElseThrow(()->new RuntimeException("User not found"));if(!encoder.matches(r.getPassword(),u.getPassword()))throw new IllegalArgumentException("Incorrect password");List<Interview> list=interviews.findByUserOrderByIdDesc(u);interviews.deleteAll(list);users.delete(u);return "Account deleted successfully.";}
+}

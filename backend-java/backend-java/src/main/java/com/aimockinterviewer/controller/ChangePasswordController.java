@@ -1,0 +1,6 @@
+package com.aimockinterviewer.controller;
+import com.aimockinterviewer.dto.ProfileDtos.ChangePasswordRequest; import com.aimockinterviewer.entity.User; import com.aimockinterviewer.repository.UserRepository; import org.springframework.security.core.Authentication; import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/change-password") public class ChangePasswordController {
+ private final UserRepository users; private final BCryptPasswordEncoder encoder; public ChangePasswordController(UserRepository users,BCryptPasswordEncoder encoder){this.users=users;this.encoder=encoder;}
+ @PutMapping public String change(@RequestBody ChangePasswordRequest r,Authentication a){User u=users.findByEmail(a.getName()).orElseThrow(()->new RuntimeException("User not found"));if(r.getCurrentPassword()==null||!encoder.matches(r.getCurrentPassword(),u.getPassword()))throw new IllegalArgumentException("Current password is incorrect");if(r.getNewPassword()==null||r.getNewPassword().length()<6)throw new IllegalArgumentException("New password must be at least 6 characters");u.setPassword(encoder.encode(r.getNewPassword()));users.save(u);return "Password changed successfully.";}
+}
