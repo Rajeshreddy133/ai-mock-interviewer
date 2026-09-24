@@ -26,20 +26,59 @@ public class AiService {
         this.apiKey=apiKey; this.apiUrl=apiUrl; this.model=model; this.maxTokens=maxTokens;
     }
 
-    private String askAI(String system,String user){
-        if(apiKey==null || apiKey.isBlank()) return null;
-        try{
-            String body=mapper.createObjectNode().put("model",model).put("temperature",0.6).put("max_completion_tokens",maxTokens)
-                .set("messages",mapper.createArrayNode()
-                    .add(mapper.createObjectNode().put("role","system").put("content",system))
-                    .add(mapper.createObjectNode().put("role","user").put("content",user))).toString();
-            HttpRequest request=HttpRequest.newBuilder(URI.create(apiUrl)).header("Authorization","Bearer "+apiKey).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(body)).build();
-            HttpResponse<String> response=client.send(request,HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode()<200 || response.statusCode()>=300) return null;
-            JsonNode root=mapper.readTree(response.body());
-            JsonNode content=root.path("choices").path(0).path("message").path("content");
-            return content.isTextual()?content.asText().trim():null;
-        }catch(Exception e){return null;}
+    private String askAI(String system, String user) {
+        if (apiKey == null || apiKey.isBlank()) {
+            System.err.println("GROQ ERROR: API key is missing.");
+            return null;
+        }
+
+        try {
+            String body = mapper.createObjectNode()
+                    .put("model", model)
+                    .put("temperature", 1.0)
+                    .put("max_completion_tokens", maxTokens)
+                    .set("messages", mapper.createArrayNode()
+                            .add(mapper.createObjectNode()
+                                    .put("role", "system")
+                                    .put("content", system))
+                            .add(mapper.createObjectNode()
+                                    .put("role", "user")
+                                    .put("content", user)))
+                    .toString();
+
+            HttpRequest request = HttpRequest.newBuilder(URI.create(apiUrl))
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
+            HttpResponse<String> response = client.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                System.err.println("GROQ API ERROR: " + response.statusCode());
+                System.err.println("GROQ RESPONSE: " + response.body());
+                return null;
+            }
+
+            JsonNode root = mapper.readTree(response.body());
+            JsonNode content = root.path("choices").path(0)
+                    .path("message").path("content");
+
+            if (!content.isTextual() || content.asText().isBlank()) {
+                System.err.println("GROQ ERROR: Empty response.");
+                System.err.println("GROQ RESPONSE: " + response.body());
+                return null;
+            }
+
+            return content.asText().trim();
+
+        } catch (Exception e) {
+            System.err.println("GROQ CONNECTION ERROR: " + e.getMessage());
+            return null;
+        }
     }
 
     public String generateQuestion(String jobRole, String interviewType) {
