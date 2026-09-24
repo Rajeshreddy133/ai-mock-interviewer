@@ -42,11 +42,43 @@ public class AiService {
         }catch(Exception e){return null;}
     }
 
-    public String generateQuestion(String jobRole,String interviewType){
-        jobRole=(jobRole==null||jobRole.isBlank())?"Software Developer":jobRole;
-        interviewType=(interviewType==null||interviewType.isBlank())?"Technical":interviewType;
-        String ai=askAI("You are a professional interviewer. Generate exactly ONE interview question. Do not add numbering, explanations, or an answer. Keep it appropriate for the requested role and interview type.","Job role: "+jobRole+"\nInterview type: "+interviewType+"\nGenerate the next interview question.");
-        return ai!=null&&!ai.isBlank()?ai:fallbackQuestion(jobRole,interviewType);
+    public String generateQuestion(String jobRole, String interviewType) {
+        return generateQuestion(jobRole, interviewType, List.of());
+    }
+
+    public String generateQuestion(
+            String jobRole,
+            String interviewType,
+            List<String> previousQuestions) {
+
+        jobRole = (jobRole == null || jobRole.isBlank())
+                ? "Software Developer" : jobRole;
+
+        interviewType = (interviewType == null || interviewType.isBlank())
+                ? "Technical" : interviewType;
+
+        previousQuestions = previousQuestions == null
+                ? List.of() : previousQuestions;
+
+        String systemPrompt =
+                "You are a professional interviewer. " +
+                "Generate exactly ONE interview question. " +
+                "The question must be relevant to the requested role and type. " +
+                "Avoid repeating any question from the previous questions list. " +
+                "Choose a different concept or topic when possible. " +
+                "Do not add numbering, explanations, or answers.";
+
+        String userPrompt =
+                "Job role: " + jobRole +
+                "\nInterview type: " + interviewType +
+                "\nPreviously asked questions: " + previousQuestions +
+                "\nGenerate one fresh interview question.";
+
+        String ai = askAI(systemPrompt, userPrompt);
+
+        return ai != null && !ai.isBlank()
+                ? ai
+                : fallbackQuestion(jobRole, interviewType);
     }
 
     public String generateResumeQuestion(String jobRole, String interviewType, String resumeText) {
