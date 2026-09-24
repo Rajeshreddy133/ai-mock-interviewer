@@ -11,7 +11,7 @@ import {
   ResponsiveContainer
 } from "recharts";
 
-const API_URL = "http://localhost:8080/api";
+const API_URL = "https://ai-mock-interviewer-production-a765.up.railway.app/api";
 
 function App() {
   // =========================================================
