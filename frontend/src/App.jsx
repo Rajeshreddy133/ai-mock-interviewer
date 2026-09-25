@@ -2892,6 +2892,10 @@ function App() {
                         Backend Developer
                       </option>
 
+                      <option value="Java Developer">
+                        Java Developer
+                      </option>
+
                       <option value="Full Stack Developer">
                         Full Stack Developer
                       </option>
