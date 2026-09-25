@@ -100,19 +100,33 @@ public class AiService {
                 ? List.of() : previousQuestions;
 
         String systemPrompt =
-                "You are a professional interviewer. " +
+                "You are a professional interviewer for beginner-level candidates. " +
                 "Generate exactly ONE interview question. " +
-                "The question must be relevant to the requested role and type. " +
+                "The question must be relevant to the requested job role and interview type. " +
+                "Keep questions beginner-friendly and use simple English. " +
+                "Avoid advanced topics and complex problem-solving. " +
                 "Avoid repeating any question from the previous questions list. " +
                 "Choose a different concept or topic when possible. " +
+                "For Java Developer roles, focus on the following topics: " +
+                "Java fundamentals, variables, data types, operators, loops, " +
+                "classes, objects, constructors, this keyword, inheritance, " +
+                "polymorphism, encapsulation, abstraction, arrays, strings, " +
+                "exception handling, and the Java Collection Framework. " +
+                "Include Collection Framework topics such as Collection basics, " +
+                "List, ArrayList, LinkedList, Set, HashSet, TreeSet, Map, " +
+                "HashMap, TreeMap, Queue, Stack, PriorityQueue, Iterator, " +
+                "and basic collection operations. " +
+                "Ask simple questions about collection usage and differences, " +
+                "such as ArrayList vs LinkedList and List vs Set vs Map. " +
+                "Do not ask advanced collection internals or complex algorithms. " +
                 "Do not add numbering, explanations, or answers.";
 
         String userPrompt =
                 "Job role: " + jobRole +
                 "\nInterview type: " + interviewType +
                 "\nPreviously asked questions: " + previousQuestions +
-                "\nGenerate one fresh interview question.";
-
+                "\nGenerate one fresh, beginner-friendly interview question.";
+                
         String ai = askAI(systemPrompt, userPrompt);
 
         return ai != null && !ai.isBlank()
